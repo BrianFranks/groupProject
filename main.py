@@ -1,12 +1,12 @@
-#this is the main file and will connect everything
+#inventory
 class inventory:
     items = []
     def addItem(self, itemAdded):
         self.items.append(itemAdded)
-print("Hello World!")
 
-#inventory class
+#cart
 
+#person
 
 #main
 position = "employee"
