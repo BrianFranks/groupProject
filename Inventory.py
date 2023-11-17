@@ -11,7 +11,7 @@ class Inventory:
     #prints inventory
     def viewInventory(self):
         try:
-            connection = sqlite3.connect("methods2.db")
+            connection = sqlite3.connect("database.sql")
 
             print("Successful connection.")
 
@@ -29,14 +29,14 @@ class Inventory:
         ## sends query and grabs data
         ## SELECT queries return a tuple for each row contained in a list
         ## --> a list of tuples
-        cursor.execute("SELECT * FROM books")
+        cursor.execute("SELECT * FROM inventory")
 
         ## only needed if you're running a SELECT
         ## this actually grabs the data
         result = cursor.fetchall()
 
         ## illustrates what unformatted results look like
-        print("Entire result set: ", result, sep="\n", end="\n\n\n")
+        #print("Entire result set: ", result, sep="\n", end="\n\n\n")
 
         for x in result:
             ## you can print the entire tuple --> print(x)
