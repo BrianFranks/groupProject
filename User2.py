@@ -62,6 +62,7 @@ class User:
                 print(f"City: {user_data[6]}")
                 print(f"State: {user_data[7]}")
                 print(f"Zip: {user_data[8]}")
+                print(f"Payment: {user_data[9]}")
             else:
                 print(f"Debug: User with ID {self.userID} not found.")
             
