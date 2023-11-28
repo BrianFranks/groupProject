@@ -6,12 +6,12 @@ class Inventory:
     def __init__(self, databaseName='', tableName=''):
         self.databaseName = databaseName
         self.tableName = tableName
-        self.inventoryContents = '???'
+        #self.inventoryContents = '???'
 
     #prints inventory
     def viewInventory(self):
         try:
-            connection = sqlite3.connect("database.sql")
+            connection = sqlite3.connect(self.databaseName + ".sql")
 
             print("Successful connection.")
 
@@ -29,7 +29,7 @@ class Inventory:
         ## sends query and grabs data
         ## SELECT queries return a tuple for each row contained in a list
         ## --> a list of tuples
-        cursor.execute("SELECT * FROM inventory")
+        cursor.execute("SELECT * FROM "+ self.tableName)
 
         ## only needed if you're running a SELECT
         ## this actually grabs the data
@@ -59,9 +59,9 @@ class Inventory:
             connection.close()
 
     #finds and prints specific item
-    def searchInventory(self, ISBN):
+    def searchInventory(self):
         try:
-            connection = sqlite3.connect("methods2.db")
+            connection = sqlite3.connect(self.databaseName + ".sql")
 
             print("Successful connection.")
 
@@ -74,7 +74,7 @@ class Inventory:
         selection = input("Title:  ")
         print("Specific column select: ")
 
-        cursor.execute("SELECT Title, Author FROM books")
+        cursor.execute("SELECT Title, Author FROM "+ self.tableName)
         result = cursor.fetchall()
 
         ## because of the SELECT query
@@ -88,22 +88,47 @@ class Inventory:
         ## goal: shows how it'd work even if you're only selecting one specific item
         ## even though you're only grabbing on item, it's still in a list of tuples
         print("\n\n\nSpecific column/row select:")
-
-        cursor.execute("SELECT Title FROM books WHERE ISBN='978-0307265432'")
+        '''
+        cursor.execute("SELECT Title FROM "+ self.tableName +" WHERE ISBN='978-0307265432'")
         result = cursor.fetchall()
 
         print("Unformatted result:", result)
 
         title = result[0][0] ## grabs the single item
         print("Title you grabbed:", title)
+        '''
         cursor.close()
         connection.close()
 
     #decreases inventory at a certain point
     def decrementInventory(self, ISBN):
+         try:
+            connection = sqlite3.connect(self.databaseName + ".sql")
+
+            print("Successful connection.")
+         except:
+             print("Failed connection.")
+
+             ## exits the program if unsuccessful
+             sys.exit()
+         cursor = connection.cursor()
          if ISBN not in self.inventoryContents:
             print("ISBN not found in inventory")
          else:
-            self.inventoryContents[ISBN] = self.inventoryContents[ISBN] + 1
+            print("ISBN found")
+            cursor.execute("SELECT Stock FROM "+ self.tableName +" WHERE ISBN='" + str(ISBN) + "'")
+            result = cursor.fetchall()
+            result = int(result)
+            print("Original stock: " + str(result))
+            if result <= 1:
+                #remove ISBN row from table
+                cursor.execute("DELETE FROM "+ self.tableName +" WHERE ISBN='" + str(ISBN) + "'")
+            else:
+                #decrement value and return to table
+            
+                cursor.execute("UPDATE "+ self.tableName +" SET Stock='"+ str(result - 1) +"' WHERE ISBN='"+ str(ISBN) +"'")
+                print("Decremented stock: " + str(result))
+            cursor.close()
+            connection.close()
 
 
