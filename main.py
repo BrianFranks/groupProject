@@ -3,10 +3,17 @@ import sys
 import Inventory
 import User2
 import Cart
+import database
 
-invInst = Inventory.Inventory()
-UserInst = User2.User()
+#DATABASE SETUP
+
+invInst = Inventory.Inventory("digitalStore", "Inventory")
+UserInst = User2.User("digitalStore", "")
 CartInst = Cart.Cart()
+
+
+
+invInst.viewInventory()
 
 choice = -1
 while choice != 0:
@@ -16,6 +23,9 @@ while choice != 0:
             User2.User.getLoggedIn()
         if choice == "2":
             User2.User.createAccount()
+    if User2.User.getLoggedIn():
+        choice
+
 
 
 #databaseName = input("Database Name: ")
