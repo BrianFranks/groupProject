@@ -10,7 +10,7 @@ except sqlite3.Error as e:
    
 
 try:
-    connection = sqlite3.connect(".db")
+    connection = sqlite3.connect("database.db")
 
     print("Successful connection.")
 
