@@ -74,7 +74,7 @@ class Inventory:
         selection = input("Title:  ")
         print("Specific column select: ")
 
-        cursor.execute("SELECT Title, Author FROM "+ self.tableName)
+        cursor.execute("SELECT "+ selection +" FROM "+ self.tableName)
         result = cursor.fetchall()
 
         ## because of the SELECT query
