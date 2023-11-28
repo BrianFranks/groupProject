@@ -13,9 +13,7 @@ except:
 cursor = connection.cursor()
 cursor.execute('''
 
-
--- Inventory Table
-CREATE TABLE Inventory (
+CREATE TABLE IF NOT EXISTS Inventory (
     ISBN VARCHAR(255) PRIMARY KEY,
     Title VARCHAR(255),
     Author VARCHAR(255),
@@ -23,10 +21,10 @@ CREATE TABLE Inventory (
     Pages VARCHAR(255),
     ReleaseDate VARCHAR(255),
     Stock INT
-);
+);''')
 
--- User Table
-CREATE TABLE User (
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS User (
     UserID INTEGER PRIMARY KEY AUTOINCREMENT,
     Email VARCHAR(255),
     Password VARCHAR(255),
@@ -37,11 +35,10 @@ CREATE TABLE User (
     State VARCHAR(50),
     Zip VARCHAR(20),
     Payment VARCHAR(50)
-);
+);''')
 
-
--- Cart Table
-CREATE TABLE Cart (
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Cart (
     UserID INT,
     ISBN VARCHAR(20),
     Quantity INT,
