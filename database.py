@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Inventory (
     ReleaseDate VARCHAR(255),
     Stock INT
 );''')
-
+connection.commit()
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS User (
     UserID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS User (
     Zip VARCHAR(20),
     Payment VARCHAR(50)
 );''')
-
+connection.commit()
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Cart (
     UserID INT,
@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS Cart (
     FOREIGN KEY (UserID) REFERENCES User(UserID),
     FOREIGN KEY (ISBN) REFERENCES Inventory(ISBN)
 );''')
+connection.commit()
 
 cursor.close()
 connection.close()
