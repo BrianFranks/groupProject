@@ -79,10 +79,11 @@ class User:
             new_city = input("Enter your city: ")
             new_state = input("Enter your state: ")
             new_zip = input("Enter your zip code: ")
+            new_payment = input("Enter your payment:")
 
             conn = self.connect_to_db()
             query = f"INSERT INTO {self.tableName} (Email, Password, FirstName, LastName, Address, City, State, Zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-            conn.execute(query, (new_email, new_password, new_first_name, new_last_name, new_address, new_city, new_state, new_zip))
+            conn.execute(query, (new_email, new_password, new_first_name, new_last_name, new_address, new_city, new_state, new_zip, new_payment))
             conn.commit()
 
             self.userID = self._get_user_id(new_email)
