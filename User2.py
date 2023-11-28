@@ -1,109 +1,108 @@
-class User:
-    def __init__(self, databaseName = "", tableName = "", password = ""):
-      self._loggedIn = False
-      self._userID = ""
-      self.firstName = ""
-      self.lastName = ""
-      self.address = ""
-      self.city = ""
-      self.state = ""
-      self.zipCode = ""
-      self.payment = ""
+  import sqlite3
 
-    def User(self):
-      pass
-   
-    def User(self,databaseName, tableName, email, address, city, state, zipCode, firstName, lastName, payment):
-      self.name = databaseName
-      self.email = email
-      self.table = tableName
-      self.address = address
-      self.city = city
-      self.state = state
-      self.zipCode = zipCode
-      self.firstName = firstName
-      self.lastName = lastName
-      self.payment = payment
+class User:
+    def __init__(self, databaseName='', tableName=''):
+        self.databaseName = databaseName
+        self.tableName = tableName
+        self.loggedIn = False
+        self.userID = ''
+
+    def connect_to_db(self):
+        return sqlite3.connect(self.databaseName)
 
     def login(self):
-      if not self._loggedIn:
-         enteredEmail = input("Enter your email address: ")
-         enteredPassword = input("Enter your password: ")
-        
-         while not self.verify_credentials(enteredEmail, enteredPassword):
-          print("Invalid email or password. Please try again.")
-          enteredEmail = input("Enter your email address: ")
-          enteredPassword = input("Enter your password: ")
-
-      self.userID = input("Enter your user ID: ")
-    
-      self.loggedIn = True
-      
-      print("Login successful.")
-     
-      return self._loggedIn
-
-      
-    def logout(self):
-      if self._loggedIn:
-         self._userID = ""
-         self.loggedIn = False
-         print("Logout successful. ")
-
-      else:
-         print("You are not logged in. ")
-      
-      return not self._loggedIn
-   
-    def createAccount(self):
         if not self.loggedIn:
-            newEmail = input("Enter your email address: ")
-            newPassword = input("Enter your password: ")
-            confirmedPassword = input("Confirm your password: ")
-            userZip = input("Enter your zip code: ")
-            userCity = input("Enter your city: ")
-            userState = input("Enter your state: ")
-            userfirstName = input("Enter your first name: ")
-            userlastName = input("Enter your last name: ")
-            userAddress = input("Enter your address: ")
-            userPayment = input("Enter your payment (Visa, Mastercard, Discover, etc): ")
-            
-            # Verification loop for password matching
-            while newPassword != confirmedPassword:
-                print("Passwords do not match. Please try again.")
-                newPassword = input("Enter your password: ")
-                confirmedPassword = input("Confirm your password: ")
+            entered_email = input("Enter your email: ")
+            entered_password = input("Enter your password: ")
 
-            self.email = newEmail
-            self.password_hash = self._hash_password(newPassword)
-            self.address = userAddress
-            self.city = userCity
-            self.state = userState
-            self.zipCode = userZip
-            self.firstName = userfirstName
-            self.lastName = userlastName
-            self.payment = userPayment
+            conn = self.connect_to_db()
+            query = f"SELECT * FROM {self.tableName} WHERE Email = ? AND Password = ?"
+            cursor = conn.execute(query, (entered_email, entered_password))
+            user_data = cursor.fetchone()
 
-            print("Account created successfully.")
-            
-                
+            if user_data:
+                print("Login successful!")
+                self.userID = user_data[0]
+                self.loggedIn = True
+                conn.close()
+                return True
+            else:
+                print("Invalid email or password. Login failed.")
+                conn.close()
+                return False
         else:
-            print("You are already logged in. No need to create another account.")
+            print("You are already logged in.")
+            return False
+
+    def logout(self):
+        if self.loggedIn:
+            print("Logging out...")
+            self.loggedIn = False
+            self.userID = ''
+            return True
+        else:
+            print("You are not logged in.")
+            return False
 
     def viewAccountInformation(self):
-        if self._loggedIn:
-            print(f"User ID: {self._userID}")
-            print(f"Database Name: {self._databaseName}")
-            print(f"Table Name: {self._tableName}")
+        if self.loggedIn:
+            conn = self.connect_to_db()
+            query = f"SELECT * FROM {self.tableName} WHERE UserID = ?"
+            cursor = conn.execute(query, (int(self.userID),))
+            user_data = cursor.fetchone()
+
+            print(f"Debug: UserID = {self.userID}")  # Debug line
+
+            if user_data:
+                print(f"Viewing account information for user {self.userID}:")
+                print(f"Email: {user_data[1]}")
+                print(f"First Name: {user_data[3]}")
+                print(f"Last Name: {user_data[4]}")
+                print(f"Address: {user_data[5]}")
+                print(f"City: {user_data[6]}")
+                print(f"State: {user_data[7]}")
+                print(f"Zip: {user_data[8]}")
+            else:
+                print(f"Debug: User with ID {self.userID} not found.")
+            
+            conn.close()
         else:
             print("You need to be logged in to view account information.")
 
+    def createAccount(self):
+        if not self.loggedIn:
+            new_email = input("Enter your email: ")
+            new_password = input("Enter your password: ")
+            new_first_name = input("Enter your first name: ")
+            new_last_name = input("Enter your last name: ")
+            new_address = input("Enter your address: ")
+            new_city = input("Enter your city: ")
+            new_state = input("Enter your state: ")
+            new_zip = input("Enter your zip code: ")
 
-  
-         
+            conn = self.connect_to_db()
+            query = f"INSERT INTO {self.tableName} (Email, Password, FirstName, LastName, Address, City, State, Zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            conn.execute(query, (new_email, new_password, new_first_name, new_last_name, new_address, new_city, new_state, new_zip))
+            conn.commit()
+
+            self.userID = self._get_user_id(new_email)
+            self.loggedIn = True
+
+            print(f"Account created for {new_email} with UserID: {self.userID}")  # Include UserID in the output
+        else:
+            print("You need to log out before creating a new account.")
+
+    def _get_user_id(self, email):
+        conn = self.connect_to_db()
+        query = f"SELECT UserID FROM {self.tableName} WHERE Email = ?"
+        cursor = conn.execute(query, (email,))
+        user_id = cursor.fetchone()[0]
+        conn.close()
+        return user_id
 
     def getLoggedIn(self):
-        return self._loggedIn
+        return self.loggedIn
 
     def getUserID(self):
-        return self._userID
+        return self.userID
+
